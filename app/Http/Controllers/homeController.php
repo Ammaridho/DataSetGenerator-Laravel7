@@ -8,10 +8,13 @@ use App\Models\internet_keluarga;
 use App\Models\data_penghuni;
 use App\Models\detail_gadget;
 
+use Illuminate\Support\Facades\DB;
+
 class homeController extends Controller
 {
     public function index()
     {
+        ini_set('memory_limit', '-1');
         $internet_keluarga = internet_keluarga::all();
         $data_penghuni = data_penghuni::all();
         $detail_gadget = detail_gadget::all();
@@ -23,7 +26,9 @@ class homeController extends Controller
 
     public function Generator()
     {  
-        set_time_limit(180);
+        set_time_limit(9999999);  //10000 data membutuhkan waktu 2:48
+
+        
 
         for ($it=0; $it < 10; $it++) { 
             
@@ -37,7 +42,7 @@ class homeController extends Controller
                 $noTelp = $this->NoTelpRand();
 
             // Provider
-                $provider = $this->Gatcha(['My Republic','Indihome','Groovy','biznet','CBN Fiber','First Media','Oxygen.id','XL Home','indosat GIG','Orbit Telkomsel','MNC PLay','Transvision','Megavision']);
+                $provider = $this->Gatcha(['My Republic','Indihome','Groovy','Biznet','CBN Fiber','First Media','Oxygen.id','XL Home','Indosat GIG','Orbit Telkomsel','MNC PLay','Transvision','Megavision']);
 
             // Data yang diperhitungkan ==================================================================
 
@@ -56,19 +61,19 @@ class homeController extends Controller
                         case '1':
                             $data[1] = 'pola 1';
                             $data[2] = $bandwidth       = $this->BandwidthBiayaBulanan('rendah');
-                            $data[3] = $jumlahPenghuni  = $this->JumlahPenghuni('sedang');
+                            $data[3] = $jumlahPenghuni  = $this->JumlahPenghuni('sedikit');
                             break;
-                        
-                        case '2':
+                            
+                            case '2':
                             $data[1] = 'pola 2';
                             $data[2] = $bandwidth       = $this->BandwidthBiayaBulanan('rendah');
-                            $data[3] = $jumlahPenghuni  = $this->JumlahPenghuni('banyak');
+                            $data[3] = $jumlahPenghuni  = $this->JumlahPenghuni('sedang');
                             break;
-
-                        case '3':
+                                
+                            case '3':
                             $data[1] = 'pola 3';
                             $data[2] = $bandwidth       = $this->BandwidthBiayaBulanan('rendah');
-                            $data[3] = $jumlahPenghuni  = $this->JumlahPenghuni('sedikit');
+                            $data[3] = $jumlahPenghuni  = $this->JumlahPenghuni('banyak');
                             break;
 
                         case '4':
@@ -142,32 +147,32 @@ class homeController extends Controller
                     switch ($pola) {
                         case '1':
                             $data[1] = 'pola 1';
-                            $data[2] = $bandwidth       = $this->BandwidthBiayaBulanan('sedang');
+                            $data[2] = $bandwidth       = $this->BandwidthBiayaBulanan('rendah');
                             $data[3] = $jumlahPenghuni  = $this->JumlahPenghuni('sedikit');
                             break;
                         
                         case '2':
                             $data[1] = 'pola 2';
                             $data[2] = $bandwidth       = $this->BandwidthBiayaBulanan('sedang');
-                            $data[3] = $jumlahPenghuni  = $this->JumlahPenghuni('sedang');
-                            break;
-
-                        case '3':
-                            $data[1] = 'pola 3';
-                            $data[2] = $bandwidth       = $this->BandwidthBiayaBulanan('tinggi');
                             $data[3] = $jumlahPenghuni  = $this->JumlahPenghuni('sedikit');
                             break;
-
+                        
+                        case '3':
+                            $data[1] = 'pola 3';
+                            $data[2] = $bandwidth       = $this->BandwidthBiayaBulanan('sedang');
+                            $data[3] = $jumlahPenghuni  = $this->JumlahPenghuni('sedang');
+                            break;
+                            
                         case '4':
                             $data[1] = 'pola 4';
                             $data[2] = $bandwidth       = $this->BandwidthBiayaBulanan('tinggi');
-                            $data[3] = $jumlahPenghuni  = $this->JumlahPenghuni('sedang');
+                            $data[3] = $jumlahPenghuni  = $this->JumlahPenghuni('sedikit');
                             break;
-
+                        
                         case '5':
                             $data[1] = 'pola 5';
-                            $data[2] = $bandwidth       = $this->BandwidthBiayaBulanan('rendah');
-                            $data[3] = $jumlahPenghuni  = $this->JumlahPenghuni('sedikit');
+                            $data[2] = $bandwidth       = $this->BandwidthBiayaBulanan('tinggi');
+                            $data[3] = $jumlahPenghuni  = $this->JumlahPenghuni('sedang');
                             break;
                     }
                 }
@@ -216,6 +221,27 @@ class homeController extends Controller
         }
 
         return redirect('/');
+    }
+
+    public function resetDatabase()
+    {
+
+        internet_keluarga::query()->delete();
+        data_penghuni::query()->delete();
+        detail_gadget::query()->delete();
+        $this->refreshDB();
+
+        return redirect('/');
+    }
+
+    public function refreshDB()
+    {
+        $max1 = DB::table('internet_keluarga')->max('id') + 1; 
+        DB::statement("ALTER TABLE internet_keluarga AUTO_INCREMENT =  $max1");
+        $max2 = DB::table('data_penghuni')->max('id') + 1; 
+        DB::statement("ALTER TABLE data_penghuni AUTO_INCREMENT =  $max2");
+        $max3 = DB::table('detail_gadget')->max('id') + 1; 
+        DB::statement("ALTER TABLE detail_gadget AUTO_INCREMENT =  $max3");
     }
 
     function Gatcha($array){
@@ -333,5 +359,6 @@ class homeController extends Controller
 
         return compact('jumlahPenghuni','namaPenghuni','banyakGadget','namaGadget','rangePenggunaan');
     }
+
 
 }

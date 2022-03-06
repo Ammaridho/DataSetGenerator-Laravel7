@@ -17,3 +17,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/','homeController@index')->name('home');
 Route::get('/generator','homeController@Generator')->name('generator');
+Route::delete('/resetDatabase','homeController@resetDatabase')->name('resetDatabase');
+
+
+// Export
+Route::get('/exportExcel','exportController@exportExcel')->name('exportExcel');
