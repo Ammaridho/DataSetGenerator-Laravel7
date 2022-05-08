@@ -30,7 +30,7 @@ class homeController extends Controller
 
         
 
-        for ($it=0; $it < 10; $it++) { 
+        for ($it=0; $it < 500; $it++) { 
             
             // Data Umum tanpa diperhitungkan ==================================================================
             // namaKeluarga
